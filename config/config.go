@@ -9,9 +9,10 @@ import (
 
 type Configuration struct {
 	Database struct {
-		Dialect     string `default:"sqlite3"`
-		Connection  string `default:"data/mononoke-go.db"`
-		DefaultSalt string `default:""`
+		Dialect              string `default:"sqlite3"`
+		Connection           string `default:"data/mononoke-go.db"`
+		DefaultSalt          string `default:""`
+		RunPasswordMigration bool   `default:"false"`
 	}
 	DefaultUser struct {
 		Name     string `default:"test"`

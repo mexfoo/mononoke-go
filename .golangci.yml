@@ -382,12 +382,12 @@ linters:
     #- thelper # detects golang test helpers without t.Helper() call and checks the consistency of test helpers
     #- wsl # [too strict and mostly code is not more readable] whitespace linter forces you to use empty lines
 
-  # Exclude some gosec rules, we have to use DES no matter what
+  # Exclude some gosec rules, we have to use DES/MD5 no matter what
   exclusions:
     rules:
       - linters:
           - gosec
-        text: "G502|G405"
+        text: "G502|G405|G401|G501"
 
 issues:
   # Maximum count of issues with the same text.

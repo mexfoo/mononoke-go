@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"crypto/md5"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/hex"
 	"encoding/pem"
 
 	"golang.org/x/crypto/bcrypt"
@@ -35,6 +37,12 @@ func VerifyPassword(password, hash string) bool {
 	return err == nil
 }
 
+// Verifies if a hash matches the md5 password.
+func VerifyPasswordMD5(password, hash string) bool {
+	md5Bytes := md5.Sum([]byte(password))
+	return hex.EncodeToString(md5Bytes[:]) == hash
+}
+
 func BytesToPublicKey(pub []byte) (*rsa.PublicKey, error) {
 	block, _ := pem.Decode(pub)
 	b := block.Bytes
@@ -58,6 +66,12 @@ func EncryptWithPublicKey(msg []byte, pub *rsa.PublicKey) ([]byte, error) {
 }
 
 func PKCS5Trimming(encrypt []byte) []byte {
+	if len(encrypt) == 0 {
+		return encrypt
+	}
 	padding := encrypt[len(encrypt)-1]
+	if len(encrypt)-int(padding) < 0 {
+		return encrypt
+	}
 	return encrypt[:len(encrypt)-int(padding)]
 }

@@ -11,6 +11,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 const (
@@ -27,22 +28,38 @@ func New(dial, conn, defaultUser, defaultPass string, createDefault bool) (*Gorm
 	var err error
 	switch dial {
 	case dialSqlite3:
-		db, err = gorm.Open(sqlite.Open(conn), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open(conn), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
+				TablePrefix: "mogo_",
+			},
+		})
 		if err != nil {
 			return nil, err
 		}
 	case dialMysql:
-		db, err = gorm.Open(mysql.Open(conn), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(conn), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
+				TablePrefix: "mogo_",
+			},
+		})
 		if err != nil {
 			return nil, err
 		}
 	case dialPostgres:
-		db, err = gorm.Open(postgres.Open(conn), &gorm.Config{})
+		db, err = gorm.Open(postgres.Open(conn), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
+				TablePrefix: "mogo_",
+			},
+		})
 		if err != nil {
 			return nil, err
 		}
 	case dialSQLSrv:
-		db, err = gorm.Open(sqlserver.Open(conn), &gorm.Config{})
+		db, err = gorm.Open(sqlserver.Open(conn), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
+				TablePrefix: "mogo_",
+			},
+		})
 		if err != nil {
 			return nil, err
 		}

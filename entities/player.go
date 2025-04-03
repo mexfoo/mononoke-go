@@ -221,7 +221,7 @@ func (a *AuthHandler) HandleAccountLogin(c *net.Client, accountPkt client.Client
 	}
 
 	account, found := a.DB.GetUserByNameAndPW(player.AccountName,
-		fmt.Sprintf("%s%s", a.Config.Database.DefaultSalt, password))
+		fmt.Sprintf("%s%s", a.Config.Database.DefaultSalt, password), a.Config)
 
 	if !found {
 		resultPkt := client.AuthClientResult{

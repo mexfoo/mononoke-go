@@ -23,6 +23,7 @@ database:
   dialect: sqlite3 # possible values sqlite3, mysql, sqlserver, postgres
   connection: data/mononoke.db # or DSN for the dialect
   defaultsalt: 2010 # salt for password hashing
+  runpasswordmigration: false # if you have existing users with an md5 password
 
 defaultuser:
   name: test # the username of the default user
@@ -58,3 +59,23 @@ MONONOKE_SERVER_AUTHGAME_LISTENIP=127.0.0.1
 MONONOKE_SERVER_DEFAULTDESKEY=password
 MONONOKE_LOGGERLEVEL=Info
 ```
+
+### Migration from existing Accounts table with MD5
+> [!IMPORTANT]  
+> This is intended to only work for SQL Server.  
+> If you don't know why you would need this, this functionality isn't made for you. ;)
+
+If you already have an existing Accounts table you can run a migration to convert your users passwords to `bcrypt`.  
+To move your existing entries into the new table, execute the following SQL query after starting `mononoke-go` with a proper database connection at least once: 
+```sql
+INSERT INTO mogo_accounts 
+  (account_id, account_name, password_md5, email, blocked, age, last_login_server_idx, permission)
+  (SELECT account_id, login_name, password, '', block, age, last_login_server_idx, permission FROM Accounts)
+```
+
+Since mononoke-go creates own tables with the prefix `mogo_`, your existing table will not be overwritten.  
+When a user logs in without a bcrypt password, the following happens:  
+1. Check if the bcrypt password in database is empty
+2. Check if the config "RunPasswordMigration" is active (see above for more info)
+3. If the password sent matches the MD5 password, create a bcrypt password based on his plain password sent via client before
+4. Remove the MD5 password connecting to his account
