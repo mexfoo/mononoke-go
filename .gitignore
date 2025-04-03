@@ -1,0 +1,6 @@
+*.env
+data/*
+.vscode/*
+mononoke-go
+bin/*
+build/*
