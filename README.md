@@ -69,7 +69,7 @@ If you already have an existing Accounts table you can run a migration to conver
 To move your existing entries into the new table, execute the following SQL query after starting `mononoke-go` with a proper database connection at least once: 
 ```sql
 INSERT INTO mogo_accounts 
-  (account_id, account_name, password_md5, email, blocked, age, last_login_server_idx, permission)
+  (account_id, account_name, password, email, blocked, age, last_login_server_idx, permission)
   (SELECT account_id, login_name, password, '', block, age, last_login_server_idx, permission FROM Accounts)
 ```
 

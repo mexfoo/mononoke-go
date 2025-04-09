@@ -20,25 +20,22 @@ func (d *GormDatabase) GetUserByNameAndPW(name, password string, conf *config.Co
 		return nil, false
 	}
 
-	if account.Password == "" {
+	if !utils.VerifyPassword(password, account.Password) {
 		// In case the bcrypt password is wrong, try migration from an md5 password?
+
 		if !conf.Database.RunPasswordMigration {
 			return nil, false
 		}
-		if !utils.VerifyPasswordMD5(password, account.PasswordMD5) {
+
+		if !utils.VerifyPasswordMD5(password, account.Password) {
 			return nil, false
 		}
+
 		account.Password, err = utils.HashPassword(password)
 		if err != nil {
 			return nil, false
 		}
-
-		account.PasswordMD5 = ""
 		d.DB.Save(&account)
-	}
-
-	if !utils.VerifyPassword(password, account.Password) {
-		return nil, false
 	}
 
 	return account, true

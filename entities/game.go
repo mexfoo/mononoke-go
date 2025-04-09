@@ -41,7 +41,9 @@ func (gl *GameList) RemoveGame(game *Game) {
 }
 
 func (gl *GameList) GetGame(key uint32) (*Game, bool) {
+	gl.mutex.Lock()
 	game, ok := gl.Games[key]
+	gl.mutex.Unlock()
 	return game, ok
 }
 
@@ -60,10 +62,14 @@ func (a *GameHandler) InitServer(server *net.Server) {
 		if game, exists := a.List.GetGame(c.GameIdentifier); exists && game != nil {
 			a.List.RemoveGame(game)
 		}
+		var message string
+		if err != nil {
+			message = err.Error()
+		}
 		a.Log.Info("Game disconnected",
 			"function", "GameHandler::OnClientConnectionClosed",
 			"identifier", c.GameIdentifier,
-			"error", err.Error())
+			"error", message)
 	})
 	server.OnNewClient(func(c *net.Client) {
 		a.Log.Debug("New Gameserver connected!",
